@@ -2,6 +2,7 @@ import jwt
 import requests
 import os
 import certifi
+import datetime
 from dotenv import load_dotenv
 from flask import Flask, render_template, jsonify, request
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required
@@ -41,7 +42,7 @@ def path():
     return render_template('getPath.html')
 
 @app.route('/signup', methods=['POST'])
-def sign_up_test():
+def sign_up():
     id = request.form['id']
     pw = request.form['pw']
     
@@ -62,7 +63,7 @@ def sign_in():
     dup = db.users.find_one({'id':id, 'pw': pw})
     
     if dup:
-        return jsonify(result = "success", access_token = create_access_token(identity = id, expires_delta = False))
+        return jsonify(result = "success", access_token = create_access_token(identity = id, expires_delta = datetime.timedelta(weeks=1)))
         
     else:
         return jsonify({'result': 'fail'})

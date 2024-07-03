@@ -20,12 +20,12 @@
         .wrap_input {
             align-items: center;
             padding-bottom: 10px;
-            background: #dee2e6;
+            background: #DEE2E6;
             width: 100%;
         }
         .input {
             border-width: 0;
-            background: #dee2e6;
+            background: #DEE2E6;
             width: 90%;
             height: 100%;
         }
@@ -44,7 +44,7 @@
         }
         .btn-white {
             font-size: 20px;
-            background-color: #f3f3f3;
+            background-color: #F3F3F3;
             border-width: 0;
             padding-top: 10px;
             padding-bottom: 10px;
@@ -53,6 +53,28 @@
     </style>
 
     <script>
+
+        $(document).ready(function(){
+            var token = localStorage.getItem('token')
+
+            // 로컬 스토리지에 토큰이 없으면 return
+            if(!token) {
+                return
+            }
+
+            $.ajax({
+                type: 'GET',
+                url: '/user_only',
+                contentType: 'application/json',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                },
+                success: function(response) {
+                    $('#content').html(response)
+                },
+            })
+        })
+
         function signIn() {
             let id = $('#id').val();
             let pw = $('#pw').val();
@@ -70,20 +92,8 @@
                         alert('로그인 성공!');
                         var token = response['access_token']
                         localStorage.setItem('token', token)
+                        location.reload()
                     }
-                    
-                }
-            })
-
-            var token = localStorage.getItem('token');
-            $.ajax({
-                type: 'GET',
-                url: '/user_only',
-                headers: {
-                    Authorization: 'Bearer '+ token
-                },
-                success: function(response) {
-                    $('#content').html(response);
                 }
             })
         }
@@ -180,6 +190,5 @@
         <p></p>
         <button class='btn-white' onclick=changePage()>회원가입</button>
     </div>
-
 </body>
 </html>
