@@ -2,8 +2,8 @@
 <html lang="ko">
     <head>
         <meta charset="UTF-8" />
-        <title>장소 정보 및 경로 표시</title>
-        <!-- JQuery를 import 합니다 -->
+        <title>장소 정보 및 경로 표시!</title>
+
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.1/css/bulma.min.css" />
         <style type="text/css">
@@ -23,14 +23,11 @@
                 padding: 20px;
                 box-sizing: border-box;
             }
-            .info-item {
-                margin: 10px 0;
-            }
             #map {
                 width: 90%;
                 margin: auto;
                 height: 90%;
-                margin-top: 20px;
+                margin-top: 40px;
             }
             #infoBox {
                 display: flex;
@@ -39,38 +36,43 @@
                 font-size: 20px;
             }
             #mapContainer {
-                height: 70%;
+                height: 80%;
+            }
+            #place-info {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-around;
             }
         </style>
 
         <script>
-            var map; // 지도 객체를 전역 변수로 선언
+            var map;
+            // 로컬스토리지에 저장 된 경위도와 선택한 키워드의 상세정보를 로드
             var currentLat = JSON.parse(localStorage.getItem('Lat'));
             var currentLon = JSON.parse(localStorage.getItem('Lon'));
             var storedObjectString = localStorage.getItem('placeData');
             if (storedObjectString) {
-                // JSON 문자열을 객체로 변환
                 var myObject = JSON.parse(storedObjectString);
-                var documents = myObject.data[0]['data'][0]; // 객체 출력: {name: 'John Doe', age: 30, email: 'john.doe@example.com'}
+                var documents = myObject.data[0]['data'][0];
             }
-
+            // 현재위치를 중심으로 지도 생성
             function initMap() {
-                var mapContainer = document.getElementById('map'); // 지도를 표시할 div
+                var mapContainer = document.getElementById('map');
                 var mapOption = {
-                    center: new kakao.maps.LatLng(currentLat, currentLon), // 지도의 중심좌표
-                    level: 3, // 지도의 확대 레벨
+                    center: new kakao.maps.LatLng(currentLat, currentLon),
+                    level: 3,
                 };
-                map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
-
+                map = new kakao.maps.Map(mapContainer, mapOption);
+                // 상세정보를 보여주고 경로를 그리는 함수 호출
                 showPlaceInfo();
                 displayRoute();
             }
-
+            // 상세정보를 입력
             function showPlaceInfo() {
                 var place = documents;
                 var infoHtml = `
-                <div class="info-item cell"><img id="place-img" width="200"></div>
-                <div id="infoBox" class="cell is-col-span-2">
+                <div class="info-item"><img id="place-img" width="200"></div>
+                <div id="infoBox" class="">
                     <div>
                 <div class="info-item has-text-black"><strong class="has-text-success">이름:</strong> ${place.place_name}</div>
                 <div class="info-item has-text-black"><strong class="has-text-success">주소:</strong> ${place.address_name}</div>
@@ -82,7 +84,7 @@
             `;
                 $('#place-info').html(infoHtml);
 
-                // 이미지 검색 및 표시
+                // 카카오 블로그 검색을 통해 나온 썸네일을 사용
                 $.ajax({
                     type: 'GET',
                     url: 'https://dapi.kakao.com/v2/search/image',
@@ -105,6 +107,7 @@
                 });
             }
 
+            // 카카오 모빌리티 api를 통해나온 경위도를 이어 경로를 표현
             function displayRoute() {
                 var destination = documents;
                 $.ajax({
@@ -135,6 +138,7 @@
                     },
                 });
             }
+            // 사용된 정보와 경위도는 중복방지를 위해 바로 제거
             localStorage.removeItem('placeData');
             localStorage.removeItem('Lat');
             localStorage.removeItem('Lon');
@@ -143,7 +147,7 @@
 
     <body onload="initMap()">
         <div id="container" class="has-background-white-ter">
-            <div id="place-info" class="grid is-column-gap-5"></div>
+            <div id="place-info"></div>
 
             <hr />
             <div id="mapContainer" class="has-background-primary-30">
