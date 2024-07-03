@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="utf-8" />
-        <title>여러개 마커 표시하기</title>
+        <title>주변 지역 검색!</title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.1/css/bulma.min.css" />
 
         <!-- JS -->
@@ -54,10 +54,13 @@
             }
         </style>
         <script>
-            let positions = [];
+            // 키워드 검색 결과를 저장 할 리스트 선언
+            var positions = [];
+            // 현재 위도와 경도를 저장할 변수 선언
             var currentLat = null;
             var currentLon = null;
 
+            // 상세보기를 선택한 키워드를 바탕으로 데이터를 받아와 상세페이지에 보여주기 위한 함수
             function showKeyword(keyword) {
                 $.ajax({
                     type: 'GET',
@@ -65,11 +68,14 @@
                     data: { keyword_give: keyword },
                     success: function (response) {
                         localStorage.setItem('placeData', JSON.stringify(response));
+                        localStorage.setItem('Lat', JSON.stringify(currentLat));
+                        localStorage.setItem('Lon', JSON.stringify(currentLon));
+
                         window.location.href = '/getPath';
                     },
                 });
             }
-            // 키워드 저장
+            // 검색 키워드로 받은 데이터를 posi
             function saveKeyword(keyword) {
                 $.ajax({
                     type: 'POST', // POST 방식으로 요청하겠다.

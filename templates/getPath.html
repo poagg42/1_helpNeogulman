@@ -45,7 +45,8 @@
 
         <script>
             var map; // 지도 객체를 전역 변수로 선언
-            let currentLat, currentLon;
+            var currentLat = JSON.parse(localStorage.getItem('Lat'));
+            var currentLon = JSON.parse(localStorage.getItem('Lon'));
             var storedObjectString = localStorage.getItem('placeData');
             if (storedObjectString) {
                 // JSON 문자열을 객체로 변환
@@ -54,19 +55,15 @@
             }
 
             function initMap() {
-                navigator.geolocation.getCurrentPosition(function (position) {
-                    currentLat = position.coords.latitude; // 위도
-                    currentLon = position.coords.longitude;
-                    var mapContainer = document.getElementById('map'); // 지도를 표시할 div
-                    var mapOption = {
-                        center: new kakao.maps.LatLng(currentLat, currentLon), // 지도의 중심좌표
-                        level: 3, // 지도의 확대 레벨
-                    };
-                    map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+                var mapContainer = document.getElementById('map'); // 지도를 표시할 div
+                var mapOption = {
+                    center: new kakao.maps.LatLng(currentLat, currentLon), // 지도의 중심좌표
+                    level: 3, // 지도의 확대 레벨
+                };
+                map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
 
-                    showPlaceInfo();
-                    displayRoute();
-                });
+                showPlaceInfo();
+                displayRoute();
             }
 
             function showPlaceInfo() {
@@ -139,6 +136,8 @@
                 });
             }
             localStorage.removeItem('placeData');
+            localStorage.removeItem('Lat');
+            localStorage.removeItem('Lon');
         </script>
     </head>
 
