@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>여러개 마커 표시하기</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.1/css/bulma.min.css" />
+
+        <!-- JS -->
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+        <script
+            src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+            crossorigin="anonymous"
+        ></script>
+        <style>
+            body,
+            html {
+                margin: 0;
+                padding: 0;
+                height: 100%;
+                width: 100%;
+            }
+            #container {
+                display: flex;
+                height: 100%;
+            }
+            #map {
+                width: 70%;
+                height: 100%;
+            }
+            #resultList {
+                width: 30%;
+                overflow-y: auto;
+                padding: 10px;
+                box-sizing: border-box;
+            }
+            .list-item {
+                cursor: pointer;
+                padding: 10px;
+                margin-bottom: 10px;
+                border-radius: 4px;
+                background-color: #f9f9f9;
+                transition: background-color 0.3s;
+            }
+            .list-item:hover {
+                background-color: #e0e0e0;
+            }
+            .button-container {
+                display: flex;
+                align-items: center;
+                margin-bottom: 20px;
+            }
+            #searchBox {
+                flex: 1;
+            }
+        </style>
+        <script>
+            let positions = [];
+            function showKeyword(keyword) {
+                $.ajax({
+                    type: 'GET',
+                    url: '/keyword',
+                    data: { keyword_give: keyword },
+                    success: function (response) {
+                        localStorage.setItem('placeData', JSON.stringify(response));
+                        window.location.href = '/getPath';
+                    },
+                });
+            }
+            // 키워드 저장
+            function saveKeyword(keyword) {
+                $.ajax({
+                    type: 'POST', // POST 방식으로 요청하겠다.
+                    url: '/keyword', // /keyword라는 url에 요청하겠다.
+                    data: { keyword_give: keyword }, // 데이터를 주는 방법
+                    success: function (response) {
+                        // 성공하면
+                        if (response['result'] == 'success') {
+                            alert('포스팅 성공!');
+                            // console.log(response['keydata'].data);
+                            for (let i = 0; i < response['keydata'].length; i++) {
+                                positions.push(response['keydata'][i]);
+                            }
+                            navigator.geolocation.getCurrentPosition(function (position) {
+                                var currentLat = position.coords.latitude;
+                                var currentLon = position.coords.longitude;
+                                initSearchMap(currentLat, currentLon, positions);
+                            });
+                        } else {
+                            alert('서버 오류!');
+                        }
+                    },
+                });
+            }
+
+            // 아래 내용 수정 가능
+
+            // keyword GET으로 확인
+        </script>
+    </head>
+    <body>
+        <div id="container" class="has-text-black-bis">
+            <div id="resultList">
+                <div class="button-container">
+                    <input class="input is-rounded" type="text" id="searchBox" placeholder="검색어를 입력하세요" />
+                    <button class="button has-background-primary-30 is-rounded ml-2" id="searchButton">검색</button>
+                </div>
+            </div>
+            <div id="map"></div>
+        </div>
+
+        <script>
+            $(document).ready(function () {
+                $.getScript(
+                    'https://dapi.kakao.com/v2/maps/sdk.js?appkey=ceb3b1d27e47ea6a83b6caea96944e4e&autoload=false',
+                    function () {
+                        kakao.maps.load(function () {
+                            navigator.geolocation.getCurrentPosition(function (position) {
+                                var currentLat = position.coords.latitude;
+                                var currentLon = position.coords.longitude;
+                                initMap(currentLat, currentLon);
+                                console.log(currentLat, currentLon);
+                            });
+                        });
+                    }
+                );
+            });
+
+            function initMap(Lat, Lon) {
+                var mapContainer = document.getElementById('map'),
+                    mapOption = {
+                        center: new kakao.maps.LatLng(Lat, Lon),
+                        level: 5,
+                    };
+                var map = new kakao.maps.Map(mapContainer, mapOption);
+            }
+
+            function initSearchMap(Lat, Lon, positions) {
+                var mapContainer = document.getElementById('map'),
+                    mapOption = {
+                        center: new kakao.maps.LatLng(Lat, Lon),
+                        level: 5,
+                    };
+
+                var map = new kakao.maps.Map(mapContainer, mapOption);
+                console.log('data', positions[0]['place_name']);
+
+                var imageSrc = 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png';
+
+                for (var i = 0; i < positions.length; i++) {
+                    var imageSize = new kakao.maps.Size(24, 35);
+                    var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize);
+                    var marker = new kakao.maps.Marker({
+                        map: map,
+                        position: new kakao.maps.LatLng(positions[i]['y'], positions[i]['x']),
+                        title: positions[i]['place_name'],
+                        image: markerImage,
+                    });
+                    kakao.maps.event.addListener(
+                        marker,
+                        'click',
+                        (function (marker, title) {
+                            return function () {
+                                alert(title);
+                            };
+                        })(marker, positions[i]['place_name'])
+                    );
+
+                    var tempHtml = `<div class="list-item" data-title="${positions[i]['place_name']}">${positions[i]['place_name']}</div>`;
+                    $('#resultList').append(tempHtml);
+                }
+            }
+
+            $('#resultList').on('click', '.list-item', function () {
+                var title = $(this).data('title');
+                showKeyword(title);
+            });
+
+            $('#searchButton').on('click', function () {
+                var searchQuery = $('#searchBox').val();
+                saveKeyword(searchQuery);
+                // 검색 요청 처리 로직
+            });
+        </script>
+    </body>
+</html>

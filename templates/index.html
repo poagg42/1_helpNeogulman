@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- JS -->
+    <script   src="https://code.jquery.com/jquery-3.6.0.min.js"   integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="   crossorigin="anonymous"></script>
+    
+    <title>Document</title>
+
+    <style>
+        .wrap {
+            display: block;
+            position: absolute;
+            width: 900px;
+            left: 25%;
+            top: 25%;
+        }
+        .wrap_input {
+            align-items: center;
+            padding-bottom: 10px;
+            background: #dee2e6;
+            width: 100%;
+        }
+        .input {
+            border-width: 0;
+            background: #dee2e6;
+            width: 90%;
+            height: 100%;
+        }
+        .btn{
+            font-size: 20px;
+            color:#ffffff;
+            background-color: #666666;
+            border-width: 0;
+            margin-top: 20px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            width: 20%
+        }
+        .txt {
+            letter-spacing: 1px;
+        }
+        .btn-white {
+            font-size: 20px;
+            background-color: #f3f3f3;
+            border-width: 0;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            width: 20%
+        }
+    </style>
+
+    <script>
+        function signIn() {
+            let id = $('#id').val();
+            let pw = $('#pw').val();
+
+            $.ajax({
+                type: 'POST',
+                url: '/signin',
+                data: { id: id,
+                        pw: pw
+                    },
+                success: function (response) {
+                    if(response['result'] == 'fail') {
+                        alert('잘못된 아이디, 비밀번호 입니다.');
+                    } else if (response['result'] == 'success') {
+                        alert('로그인 성공!');
+                        var token = response['access_token']
+                        localStorage.setItem('token', token)
+                    }
+                    
+                }
+            })
+
+            var token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: '/user_only',
+                headers: {
+                    Authorization: 'Bearer '+ token
+                },
+                success: function(response) {
+                    $('#content').html(response);
+                }
+            })
+        }
+
+        function signUp() {
+            let id = $('#id_signup').val();
+            let pw = $('#pw_signup').val();
+
+            // 빈 칸 입력시
+            if (!id || !pw) {
+                alert("아이디와 비밀번호는 필수 정보입니다.")
+                return;
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: '/signup',
+                data: {
+                    id: id,
+                    pw: pw,
+                },
+                success: function (response) {
+                    if(response['result'] == 'fail') {
+                        alert("중복된 아이디입니다.")
+                    } else if(response['result'] == 'success') {
+                        alert("회원 가입 완료 환영합니다!")
+                        changeIndex();
+                    }
+                }
+            })
+        }
+
+        function changePage() {
+            $('#content').empty()
+            let temp_html = `    <div class = 'wrap'>
+        <h1>회원 가입</h1>
+        <div>
+            <div class='wrap_input'>
+                <p class="txt">&nbsp;ID</p>
+                <input type="text" id='id_signup' class='input' placeholder='아이디를 입력하세요'>
+            </div>
+        </div>
+        <div>
+            <div class='wrap_input'>
+                <p class="txt">&nbsp;Password</p>
+                <input type="password" id='pw_signup' class='input' placeholder='비밀번호를 입력하세요'>       
+            </div>
+        </div>
+        <button class="btn" onclick='signUp()'>회원가입</button>
+    </div>`
+            $('#content').append(temp_html)
+        }
+
+        function changeIndex() {
+            $('#content').empty()
+            let temp_html = `    <div class = 'wrap'>
+        <h1>도와줘요 너굴맵</h1>
+        <div>
+            <div class='wrap_input'>
+                <p class="txt">&nbsp;ID</p>
+                <input type="text" id='id' class='input' placeholder='아이디를 입력하세요'>
+            </div>
+        </div>
+        <div>
+            <div class='wrap_input'>
+                <p class="txt">&nbsp;Password</p>
+                <input type="password" id='pw' class='input' placeholder='비밀번호를 입력하세요'>       
+            </div>
+        </div>
+        <button class="btn" onclick=signIn()>로그인</button>
+        <p></p>
+        <button class='btn-white' onclick=changePage()>회원가입</button>
+    </div>`
+            $('#content').append(temp_html)
+        }
+    </script>
+</head>
+<body id="content">
+    <div class = 'wrap'>
+        <h1>도와줘요 너굴맵</h1>
+        <div>
+            <div class='wrap_input'>
+                <p class="txt">&nbsp;ID</p>
+                <input type="text" id='id' class='input' placeholder='아이디를 입력하세요'>
+            </div>
+        </div>
+        <div>
+            <div class='wrap_input'>
+                <p class="txt">&nbsp;Password</p>
+                <input type="password" id='pw' class='input' placeholder='비밀번호를 입력하세요'>       
+            </div>
+        </div>
+        <button class="btn" onclick=signIn()>로그인</button>
+        <p></p>
+        <button class='btn-white' onclick=changePage()>회원가입</button>
+    </div>
+
+</body>
+</html>
