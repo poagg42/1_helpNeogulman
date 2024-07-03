@@ -76,8 +76,6 @@
                         // 성공하면
                         if (response['result'] == 'success') {
                             positions = [];
-                            console.log(response);
-                            console.log(response['keydata']);
                             if (response['result'] != 'error') {
                                 for (let i = 0; i < response['keydata'].length; i++) {
                                     positions.push(response['keydata'][i]);
@@ -124,7 +122,6 @@
                                 var currentLat = position.coords.latitude;
                                 var currentLon = position.coords.longitude;
                                 initMap(currentLat, currentLon);
-                                console.log(currentLat, currentLon);
                             });
                         });
                     }
@@ -149,7 +146,6 @@
                     };
 
                 var map = new kakao.maps.Map(mapContainer, mapOption);
-                console.log('data', positions[0]['place_name']);
 
                 var imageSrc = 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png';
 

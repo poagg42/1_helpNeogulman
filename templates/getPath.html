@@ -51,7 +51,6 @@
                 // JSON 문자열을 객체로 변환
                 var myObject = JSON.parse(storedObjectString);
                 var documents = myObject.data[0]['data'][0]; // 객체 출력: {name: 'John Doe', age: 30, email: 'john.doe@example.com'}
-                console.log(documents);
             }
 
             function initMap() {
@@ -71,7 +70,6 @@
             }
 
             function showPlaceInfo() {
-                console.log('여기', documents);
                 var place = documents;
                 var infoHtml = `
                 <div class="info-item cell"><img id="place-img" width="200"></div>
