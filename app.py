@@ -79,6 +79,8 @@ def login():
 def save_keyword():
     # 클라이언트로부터 데이터 받기
     keyword_receive = request.form.get('keyword_give')
+    latitude = request.form.get('Lat')
+    longitude = request.form.get('Lon')
     
     if not keyword_receive:
         return jsonify({'result': 'fail', 'msg': 'No keyword provided'}), 400
@@ -94,7 +96,10 @@ def save_keyword():
         'Authorization': f'KakaoAK {KAKAO_API_KEY}'
     }
     params = {
-        'query': keyword_receive
+        'query': keyword_receive,
+        'y': latitude,
+        'x': longitude,
+        'radius': 700
     }
     response = requests.get(KAKAO_API_URL, headers=headers, params=params)
     
@@ -153,6 +158,12 @@ def get_detailkeyword():
     # 2. detailKeywords라는 키 값으로 detailKeyword 정보 보내주기
     return jsonify({'result': 'success', 'detailKeywords': result})
 
+
+# 상세보기 데이터 서버 -> 클라이언트
+@app.route('/ipGive', methods=['GET'])
+def get_ip():
+    user_ip = request.remote_addr
+    return jsonify({'ip': user_ip})
 
 
 if __name__ == '__main__':  

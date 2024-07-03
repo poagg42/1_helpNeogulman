@@ -55,6 +55,9 @@
         </style>
         <script>
             let positions = [];
+            var currentLat = null;
+            var currentLon = null;
+
             function showKeyword(keyword) {
                 $.ajax({
                     type: 'GET',
@@ -71,7 +74,7 @@
                 $.ajax({
                     type: 'POST', // POST 방식으로 요청하겠다.
                     url: '/keyword', // /keyword라는 url에 요청하겠다.
-                    data: { keyword_give: keyword }, // 데이터를 주는 방법
+                    data: { keyword_give: keyword, Lat: currentLat, Lon: currentLon }, // 데이터를 주는 방법
                     success: function (response) {
                         // 성공하면
                         if (response['result'] == 'success') {
@@ -80,11 +83,7 @@
                                 for (let i = 0; i < response['keydata'].length; i++) {
                                     positions.push(response['keydata'][i]);
                                 }
-                                navigator.geolocation.getCurrentPosition(function (position) {
-                                    var currentLat = position.coords.latitude;
-                                    var currentLon = position.coords.longitude;
-                                    initSearchMap(currentLat, currentLon, positions);
-                                });
+                                initSearchMap(positions);
                             } else {
                                 alert('주변에 검색 결과가 없습니다!');
                             }
@@ -104,6 +103,12 @@
         <div id="container" class="has-text-black-bis">
             <div id="resultList">
                 <div class="button-container">
+                    <input class="input is-rounded" type="text" id="addressBox" placeholder="주소를 입력하세요" />
+                    <button class="button has-background-primary-30 is-rounded ml-2" id="addressButton">
+                        주소 검색
+                    </button>
+                </div>
+                <div class="button-container">
                     <input class="input is-rounded" type="text" id="searchBox" placeholder="검색어를 입력하세요" />
                     <button class="button has-background-primary-30 is-rounded ml-2" id="searchButton">검색</button>
                 </div>
@@ -113,42 +118,52 @@
         </div>
 
         <script>
-            $(document).ready(function () {
+            function getCoordinates(address) {
+                $.ajax({
+                    type: 'GET',
+                    url: 'https://dapi.kakao.com/v2/local/search/address.json',
+                    data: { query: address },
+                    headers: { Authorization: 'KakaoAK 03427ce08466c2fe4c4567485860e426' },
+                    success: function (response) {
+                        currentLat = response.documents[0].y;
+                        currentLon = response.documents[0].x;
+                        start();
+                    },
+                });
+            }
+            function start() {
                 $.getScript(
                     'https://dapi.kakao.com/v2/maps/sdk.js?appkey=ceb3b1d27e47ea6a83b6caea96944e4e&autoload=false',
                     function () {
                         kakao.maps.load(function () {
-                            navigator.geolocation.getCurrentPosition(function (position) {
-                                var currentLat = position.coords.latitude;
-                                var currentLon = position.coords.longitude;
-                                initMap(currentLat, currentLon);
-                            });
+                            initMap(currentLat, currentLon);
                         });
                     }
                 );
-            });
+            }
 
             function initMap(Lat, Lon) {
+                console.log('그려');
                 var mapContainer = document.getElementById('map'),
                     mapOption = {
-                        center: new kakao.maps.LatLng(Lat, Lon),
+                        center: new kakao.maps.LatLng(currentLat, currentLon),
                         level: 5,
                     };
                 var map = new kakao.maps.Map(mapContainer, mapOption);
+                console.log('다했어');
             }
 
-            function initSearchMap(Lat, Lon, positions) {
+            function initSearchMap(positions) {
                 $('#searchList').empty();
                 var mapContainer = document.getElementById('map'),
                     mapOption = {
-                        center: new kakao.maps.LatLng(Lat, Lon),
+                        center: new kakao.maps.LatLng(currentLat, currentLon),
                         level: 5,
                     };
 
                 var map = new kakao.maps.Map(mapContainer, mapOption);
 
                 var imageSrc = 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png';
-
                 for (var i = 0; i < positions.length; i++) {
                     var imageSize = new kakao.maps.Size(24, 35);
                     var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize);
@@ -188,6 +203,17 @@
                 if (e.key === 'Enter' || e.keyCode === 13) {
                     var searchQuery = $('#searchBox').val();
                     saveKeyword(searchQuery);
+                }
+            });
+            $('#addressButton').on('click', function () {
+                var address = $('#addressBox').val();
+                getCoordinates(address);
+            });
+
+            $('#addressBox').on('keyup', function (e) {
+                if (e.key === 'Enter' || e.keyCode === 13) {
+                    var address = $('#addressBox').val();
+                    getCoordinates(address);
                 }
             });
         </script>
