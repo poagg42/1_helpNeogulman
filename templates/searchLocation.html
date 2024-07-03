@@ -54,6 +54,26 @@
             #searchBox {
                 flex: 1;
             }
+
+            @media only screen and (min-width: 200px) and (max-width: 480px) {
+                #resultList {
+                    width: 50%;
+                    overflow-y: auto;
+                    padding: 10px;
+                    box-sizing: border-box;
+                }
+                #map {
+                    width: 50%;
+                    height: 100%;
+                    background: url('../static/neogulman.jpg');
+                    background-size: 33.5% 100%;
+                    background-position: right;
+                }
+                .button .is-rounded {
+                    padding-left: 0px;
+                    padding-right: 0px;
+                }
+            }
         </style>
         <script>
             // 키워드 검색 결과를 저장 할 리스트 선언

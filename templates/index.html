@@ -15,11 +15,11 @@
 
         <style>
             .wrap {
-                display: block;
-                position: absolute;
-                width: 900px;
-                left: 25%;
-                top: 25%;
+                display: flex;
+                width: 80%;
+                margin-top: 10%;
+                flex-direction: column;
+                min-width: 432px;
             }
             .wrap_input {
                 align-items: center;
@@ -53,6 +53,12 @@
                 padding-top: 10px;
                 padding-bottom: 10px;
                 width: 20%;
+            }
+            .id {
+                width: 95%;
+            }
+            .password {
+                width: 95%;
             }
         </style>
 
@@ -131,13 +137,13 @@
                 $('#content').empty();
                 let temp_html = `    <div class = 'wrap'>
         <h1>회원 가입</h1>
-        <div>
+        <div class="id">
             <div class='wrap_input'>
                 <p class="txt">&nbsp;ID</p>
                 <input type="text" id='id_signup' class='input' placeholder='아이디를 입력하세요'>
             </div>
         </div>
-        <div>
+        <div class="password">
             <div class='wrap_input'>
                 <p class="txt">&nbsp;Password</p>
                 <input type="password" id='pw_signup' class='input' placeholder='비밀번호를 입력하세요'>       
@@ -152,13 +158,13 @@
                 $('#content').empty();
                 let temp_html = `    <div class = 'wrap'>
         <h1>도와줘요 너굴맵</h1>
-        <div>
+        <div class="id">
             <div class='wrap_input'>
                 <p class="txt">&nbsp;ID</p>
                 <input type="text" id='id' class='input' placeholder='아이디를 입력하세요'>
             </div>
         </div>
-        <div>
+        <div class="password">
             <div class='wrap_input'>
                 <p class="txt">&nbsp;Password</p>
                 <input type="password" id='pw' class='input' placeholder='비밀번호를 입력하세요'>       
@@ -175,13 +181,13 @@
     <body id="content">
         <div class="wrap">
             <h1>도와줘요 너굴맵</h1>
-            <div>
+            <div class="id">
                 <div class="wrap_input">
                     <p class="txt">&nbsp;ID</p>
                     <input type="text" id="id" class="input" placeholder="아이디를 입력하세요" />
                 </div>
             </div>
-            <div>
+            <div class="password">
                 <div class="wrap_input">
                     <p class="txt">&nbsp;Password</p>
                     <input type="password" id="pw" class="input" placeholder="비밀번호를 입력하세요" />
