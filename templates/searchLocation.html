@@ -187,6 +187,13 @@
                 saveKeyword(searchQuery);
                 // 검색 요청 처리 로직
             });
+
+            $('#searchBox').on('keyup', function (e) {
+                if (e.key === 'Enter' || e.keyCode === 13) {
+                    var searchQuery = $('#searchBox').val();
+                    saveKeyword(searchQuery);
+                }
+            });
         </script>
     </body>
 </html>
