@@ -76,6 +76,7 @@
                         // 성공하면
                         if (response['result'] == 'success') {
                             alert('포스팅 성공!');
+                            positions = [];
                             // console.log(response['keydata'].data);
                             for (let i = 0; i < response['keydata'].length; i++) {
                                 positions.push(response['keydata'][i]);
@@ -104,6 +105,7 @@
                     <input class="input is-rounded" type="text" id="searchBox" placeholder="검색어를 입력하세요" />
                     <button class="button has-background-primary-30 is-rounded ml-2" id="searchButton">검색</button>
                 </div>
+                <div id="searchList"></div>
             </div>
             <div id="map"></div>
         </div>
@@ -135,6 +137,7 @@
             }
 
             function initSearchMap(Lat, Lon, positions) {
+                $('#searchList').empty();
                 var mapContainer = document.getElementById('map'),
                     mapOption = {
                         center: new kakao.maps.LatLng(Lat, Lon),
@@ -166,11 +169,11 @@
                     );
 
                     var tempHtml = `<div class="list-item" data-title="${positions[i]['place_name']}">${positions[i]['place_name']}</div>`;
-                    $('#resultList').append(tempHtml);
+                    $('#searchList').append(tempHtml);
                 }
             }
 
-            $('#resultList').on('click', '.list-item', function () {
+            $('#searchList').on('click', '.list-item', function () {
                 var title = $(this).data('title');
                 showKeyword(title);
             });

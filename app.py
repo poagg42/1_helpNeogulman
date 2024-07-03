@@ -18,7 +18,7 @@ KAKAO_API_URL = os.getenv('KAKAO_API_URL')
 KAKAO_API_KEY = os.getenv('KAKAO_API_KEY')
 
 mongo_connect = os.getenv('DB_INFO')
-client = MongoClient(mongo_connect)
+client = MongoClient(mongo_connect, tlsCAFile=certifi.where())
 db = client.sample_mflix
 
 app = Flask(__name__)
