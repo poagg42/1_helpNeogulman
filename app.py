@@ -1,16 +1,25 @@
 import jwt
+import requests
+import os
+import certifi
+from dotenv import load_dotenv
 from flask import Flask, render_template, jsonify, request
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required
 from pymongo import MongoClient 
 from flask_cors import CORS
-import requests
-
 from pymongo import MongoClient
-import certifi
 
+# .env 파일 로드
+load_dotenv()
 
-KAKAO_API_URL = "https://dapi.kakao.com/v2/local/search/keyword.json?y=37.3002667&x=127.033572&radius=1500"
-KAKAO_API_KEY = "03427ce08466c2fe4c4567485860e426"  # 여기에 실제 카카오 API 키를 입력하세요.
+# 환경 변수 사용
+
+KAKAO_API_URL = os.getenv('KAKAO_API_URL')
+KAKAO_API_KEY = os.getenv('KAKAO_API_KEY')
+
+mongo_connect = os.getenv('DB_INFO')
+client = MongoClient(mongo_connect)
+db = client.sample_mflix
 
 app = Flask(__name__)
 CORS(app)
