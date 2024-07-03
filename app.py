@@ -18,7 +18,7 @@ KAKAO_API_URL = os.getenv('KAKAO_API_URL')
 KAKAO_API_KEY = os.getenv('KAKAO_API_KEY')
 
 mongo_connect = os.getenv('DB_INFO')
-client = MongoClient(mongo_connect, tlsCAFile=certifi.where())
+client = MongoClient(mongo_connect , tlsCAFile=certifi.where())
 db = client.sample_mflix
 
 app = Flask(__name__)
@@ -99,12 +99,15 @@ def save_keyword():
     
     if response.status_code != 200:
         return jsonify({'result': 'fail', 'msg': 'Kakao API request failed'}), response.status_code
-
     # Kakao API 응답 데이터 MongoDB에 저장
     kakao_data = response.json().get('documents', [])
-    db.keywords.insert_one({'keyword': keyword_receive, 'data': kakao_data})
+    if (kakao_data):
+        db.keywords.insert_one({'keyword': keyword_receive, 'data': kakao_data})
+        return jsonify({'result': 'success', 'keydata': kakao_data})
+    else:
+        return jsonify({'result': 'error', 'msg': '검색결과가 없습니다.'})
 
-    return jsonify({'result': 'success', 'keydata': kakao_data})
+
 
 @app.route('/keyword', methods=['GET'])
 def search_keyword():

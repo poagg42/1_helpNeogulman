@@ -75,19 +75,23 @@
                     success: function (response) {
                         // 성공하면
                         if (response['result'] == 'success') {
-                            alert('포스팅 성공!');
                             positions = [];
-                            // console.log(response['keydata'].data);
-                            for (let i = 0; i < response['keydata'].length; i++) {
-                                positions.push(response['keydata'][i]);
+                            console.log(response);
+                            console.log(response['keydata']);
+                            if (response['result'] != 'error') {
+                                for (let i = 0; i < response['keydata'].length; i++) {
+                                    positions.push(response['keydata'][i]);
+                                }
+                                navigator.geolocation.getCurrentPosition(function (position) {
+                                    var currentLat = position.coords.latitude;
+                                    var currentLon = position.coords.longitude;
+                                    initSearchMap(currentLat, currentLon, positions);
+                                });
+                            } else {
+                                alert('주변에 검색 결과가 없습니다!');
                             }
-                            navigator.geolocation.getCurrentPosition(function (position) {
-                                var currentLat = position.coords.latitude;
-                                var currentLon = position.coords.longitude;
-                                initSearchMap(currentLat, currentLon, positions);
-                            });
                         } else {
-                            alert('서버 오류!');
+                            alert('주변에 검색 결과가 없습니다!');
                         }
                     },
                 });
