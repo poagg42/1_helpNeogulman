@@ -34,6 +34,7 @@
                 overflow-y: auto;
                 padding: 10px;
                 box-sizing: border-box;
+                background-color: #161515;
             }
             .list-item {
                 cursor: pointer;
@@ -53,6 +54,18 @@
             }
             #searchBox {
                 flex: 1;
+            }
+            h1 {
+                color: white;
+                margin-top: 15px;
+                font-size: 13px;
+                font-weight: bold;
+                margin-left: 5%;
+            }
+            #user {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 15px;
             }
 
             @media only screen and (min-width: 200px) and (max-width: 480px) {
@@ -81,7 +94,10 @@
             // 현재 위도와 경도를 저장할 변수 선언
             var currentLat = null;
             var currentLon = null;
-
+            function logOut() {
+                localStorage.removeItem('token');
+                location.reload();
+            }
             // 상세보기를 선택한 키워드를 바탕으로 데이터를 받아와 상세페이지에 보여주기 위한 함수
             function showKeyword(keyword) {
                 $.ajax({
@@ -128,6 +144,11 @@
     <body>
         <div id="container" class="has-text-black-bis">
             <div id="resultList">
+                <div id="user">
+                    <h1>{{current_user}} 님 환영합니다.</h1>
+                    <button class="button has-background-primary-30 is-rounded ml-2" onclick="logOut()">Logout</button>
+                </div>
+
                 <div class="button-container">
                     <input
                         class="input is-rounded"
@@ -144,6 +165,7 @@
                     <input class="input is-rounded" type="text" id="searchBox" placeholder="검색어를 입력하세요" />
                     <button class="button has-background-primary-30 is-rounded ml-2" id="searchButton">검색</button>
                 </div>
+
                 <div id="searchList"></div>
             </div>
             <div id="map"></div>

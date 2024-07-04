@@ -5,7 +5,7 @@ import certifi
 import datetime
 from dotenv import load_dotenv
 from flask import Flask, render_template, jsonify, request
-from flask_jwt_extended import JWTManager, create_access_token, jwt_required
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from pymongo import MongoClient 
 from flask_cors import CORS
 from pymongo import MongoClient
@@ -67,7 +67,8 @@ def sign_in():
 @app.route('/user_only', methods=['GET'])
 @jwt_required()
 def login():
-    return render_template('searchLocation.html')
+    current_user = get_jwt_identity()
+    return render_template('searchLocation.html', current_user = current_user)
 
 @app.route('/getPath', methods=['GET'])
 def detail():
